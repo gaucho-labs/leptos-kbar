@@ -1,0 +1,10 @@
+[package]
+name = "leptos_kbar"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+leptos = "0.6.5"
+leptos_hotkeys = "0.1.2"
