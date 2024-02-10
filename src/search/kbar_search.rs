@@ -1,6 +1,5 @@
 use leptos::*;
 use crate::kbar_provider::{ KBarContext, use_kbar_context };
-use crate::search::types::KBarAction;
 
 #[component]
 pub fn KBarSearch() -> impl IntoView {
@@ -38,7 +37,7 @@ pub fn SearchBar(
 
 #[component]
 pub fn Content(search_input: ReadSignal<String>) -> impl IntoView {
-    let KBarContext { tree, actions_table, .. } = use_kbar_context();
+    let KBarContext { tree, .. } = use_kbar_context();
 
     let result = create_rw_signal(vec![]);
 
@@ -52,18 +51,9 @@ pub fn Content(search_input: ReadSignal<String>) -> impl IntoView {
         <ul>
             <For
                 each=result
-                key=|idx| idx.clone()
-                children=move |idx| {
-                    let binding = actions_table.get();
-                    let action_opt = binding.get(&idx);
-                    match action_opt {
-                        Some(action) => {
-                            view! { <div>{&action.name}</div> }
-                        }
-                        None => {
-                            view! { <div></div> }
-                        }
-                    }
+                key=|action| action.clone()
+                children=move |action| {
+                    view! { <div>{&*(action.name)}</div> }
                 }
             />
 

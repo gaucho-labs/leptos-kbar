@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::sync::Arc;
 use leptos::*;
 use leptos_hotkeys::prelude::*;
 
@@ -58,9 +58,8 @@ pub fn KBarPositioner(
 
 #[derive(Clone)]
 pub struct KBarContext {
-    pub actions: RwSignal<Vec<KBarAction>>,
+    pub actions: RwSignal<Vec<Arc<KBarAction>>>,
     pub tree: RwSignal<Trie>,
-    pub actions_table: RwSignal<HashMap<usize, KBarAction>>
 }
 
 pub fn use_kbar_context() -> KBarContext {
@@ -71,26 +70,19 @@ pub fn use_kbar_context() -> KBarContext {
 pub fn KBarProvider(
     #[prop(default = "control+k")] hotkey: &'static str,
     #[prop(default = "escape")] escape: &'static str,
-    actions: Vec<KBarAction>,
+    actions: Vec<Arc<KBarAction>>,
     children: Children
 ) -> impl IntoView {
 
     let tree = Trie::batch_insert(&actions);
 
-    let mut actions_table = HashMap::new();
 
-    for action in &actions {
-        actions_table.insert(action.id, action.clone());
-    }
-
-    let actions_table= create_rw_signal(actions_table);
     let actionsList = create_rw_signal(actions);
     let tree = create_rw_signal(tree);
 
     provide_context(KBarContext {
         actions: actionsList,
         tree,
-        actions_table,
     });
 
     view! {

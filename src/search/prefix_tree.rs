@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use crate::search::types::KBarAction;
+use std::sync::Arc;
 
 #[derive(Debug, Clone)]
 struct TrieNode {
@@ -19,11 +20,11 @@ impl TrieNode {
 #[derive(Debug, Clone)]
 pub struct Trie {
     root: TrieNode,
-    indexing: HashMap<String, usize>,
+    indexing: HashMap<Arc<String>, Arc<KBarAction>>,
 }
 
 impl Trie {
-    pub(crate) fn new(actions: &[KBarAction]) -> Self {
+    pub(crate) fn new(actions: &Vec<Arc<KBarAction>>) -> Self {
         // todo! figure out an optimal way. this is fucking disgusting.
         // so many clones. we'll add a lifetime of <'str>
         // we flatten out the names and keywords for every action and map it to the id
@@ -31,11 +32,12 @@ impl Trie {
         let mut indexer = HashMap::new();
 
         for action in actions {
-            indexer.insert(action.name.clone(), action.id.clone());
+            let action_refs = KBarAction::flatten(action);
 
-            for keyword in &action.keywords {
-                indexer.insert(keyword.clone(), action.id.clone());
+            for (keyword_ref, action_ref) in action_refs {
+                indexer.insert(keyword_ref, action_ref);
             }
+
         }
 
         Trie {
@@ -54,7 +56,7 @@ impl Trie {
         current.is_end_of_word = true;
     }
 
-    pub fn batch_insert(actions: &[KBarAction]) -> Self {
+    pub fn batch_insert(actions: &Vec<Arc<KBarAction>>) -> Self {
         let mut trie = Trie::new(actions);
         for action in actions {
             // Insert the action name with its own name as the identifier
@@ -67,7 +69,7 @@ impl Trie {
         trie
     }
 
-    pub fn starts_with(&self, prefix: &str) -> Vec<usize> {
+    pub fn starts_with(&self, prefix: &str) -> Vec<Arc<KBarAction>> {
         let mut result = Vec::new();
         let mut current = &self.root;
 
@@ -86,8 +88,8 @@ impl Trie {
         self.collect_words(current, prefix.to_string(), &mut result);
 
         for word in result {
-            if let Some(&id) = self.indexing.get(&word) {
-                word_ids.insert(id);
+            if let Some(action) = self.indexing.get(&word) {
+                word_ids.insert(action.clone());
             }
         }
 

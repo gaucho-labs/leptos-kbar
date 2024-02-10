@@ -1,14 +1,15 @@
-use std::collections::{HashMap};
+use std::hash::{ Hash, Hasher };
 use leptos::Callback;
+use std::sync::Arc;
 
 
 
 #[derive(Debug, Clone)]
 pub struct KBarAction {
-    pub(crate) id: usize, // we'll need this to be unique
-    pub(crate) name: String, // we'll require this to also be unique
-    pub(crate) shortcut: String,
-    pub(crate) keywords: Vec<String>,
+    pub(crate) id: Arc<usize>, // we'll need this to be unique
+    pub(crate) name: Arc<String>, // we'll require this to also be unique
+    pub(crate) shortcut: Arc<String>,
+    pub(crate) keywords: Vec<Arc<String>>,
     pub(crate) perform: Callback<()>,
 }
 
@@ -20,19 +21,36 @@ impl KBarAction {
         keywords: Vec<String>,
         perform: Callback<()>
     ) -> Self {
+        let keywords = keywords
+            .iter()
+            .map(|k| Arc::new(k.clone()))
+            .collect();
         KBarAction {
-            id,
-            name,
-            shortcut,
+            id: Arc::new(id),
+            name: Arc::new(name),
+            shortcut: Arc::new(shortcut),
             keywords,
             perform,
         }
     }
 
-    fn flatten(&self) -> Vec<(String, usize)> {
+    pub fn flatten(action_ref: &Arc<KBarAction>) -> Vec<(Arc<String>, Arc<KBarAction>)> {
         std::iter
-            ::once((self.name.clone(), self.id.clone()))
-            .chain(self.keywords.iter().map(|k| (k.clone(), self.id.clone())))
+            ::once((action_ref.name.clone(), action_ref.clone()))
+            .chain((action_ref).keywords.iter().map(|k| (k.clone(), action_ref.clone())))
             .collect()
+    }
+}
+
+impl Hash for KBarAction {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        (*self.id).hash(state);
+        (*self.name).hash(state);
+    }
+}
+impl Eq for KBarAction {}
+impl PartialEq for KBarAction {
+    fn eq(&self, other: &Self) -> bool {
+        *self.id == *other.id
     }
 }
