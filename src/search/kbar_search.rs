@@ -7,13 +7,8 @@ pub fn KBarSearch() -> impl IntoView {
     let (search_input, set_search_input) = create_signal("".to_string());
 
     view! {
-        <SearchBar
-            search_input=search_input
-            set_search_input=set_search_input
-        />
-        <Content
-            search_input=search_input
-        />
+        <SearchBar search_input=search_input set_search_input=set_search_input/>
+        <Content search_input=search_input/>
     }
 }
 
@@ -28,13 +23,14 @@ pub fn SearchBar(
             on:input=move |ev| {
                 set_search_input(event_target_value(&ev));
             }
+
             placeholder="Type a command or search..."
             prop:value=search_input
             style="\
-                font-size: 1rem;
-                padding: 0.25rem;
-                width: 100%;
-                outline: none;
+            font-size: 1rem;
+            padding: 0.25rem;
+            width: 100%;
+            outline: none;
             "
         />
     }
@@ -42,7 +38,7 @@ pub fn SearchBar(
 
 #[component]
 pub fn Content(search_input: ReadSignal<String>) -> impl IntoView {
-    let KBarContext { tree, .. } = use_kbar_context();
+    let KBarContext { tree, actions_table, .. } = use_kbar_context();
 
     let result = create_rw_signal(vec![]);
 
@@ -54,17 +50,23 @@ pub fn Content(search_input: ReadSignal<String>) -> impl IntoView {
 
     view! {
         <ul>
-          <For
+            <For
                 each=result
-                key=|log| log.clone()
-                children=move |log| {
-                    view! {
-                        <li>
-                            <p>{log}</p>
-                        </li>
+                key=|idx| idx.clone()
+                children=move |idx| {
+                    let binding = actions_table.get();
+                    let action_opt = binding.get(&idx);
+                    match action_opt {
+                        Some(action) => {
+                            view! { <div>{&action.name}</div> }
+                        }
+                        None => {
+                            view! { <div></div> }
+                        }
                     }
                 }
             />
+
         </ul>
     }
 }

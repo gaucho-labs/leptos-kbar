@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use crate::search::types::KBarAction;
 
 #[derive(Debug, Clone)]
@@ -19,12 +19,28 @@ impl TrieNode {
 #[derive(Debug, Clone)]
 pub struct Trie {
     root: TrieNode,
+    indexing: HashMap<String, usize>,
 }
 
 impl Trie {
-    pub(crate) fn new() -> Self {
+    pub(crate) fn new(actions: &[KBarAction]) -> Self {
+        // todo! figure out an optimal way. this is fucking disgusting.
+        // so many clones. we'll add a lifetime of <'str>
+        // we flatten out the names and keywords for every action and map it to the id
+
+        let mut indexer = HashMap::new();
+
+        for action in actions {
+            indexer.insert(action.name.clone(), action.id.clone());
+
+            for keyword in &action.keywords {
+                indexer.insert(keyword.clone(), action.id.clone());
+            }
+        }
+
         Trie {
             root: TrieNode::new(),
+            indexing: indexer,
         }
     }
 
@@ -39,7 +55,7 @@ impl Trie {
     }
 
     pub fn batch_insert(actions: &[KBarAction]) -> Self {
-        let mut trie = Trie::new();
+        let mut trie = Trie::new(actions);
         for action in actions {
             // Insert the action name with its own name as the identifier
             trie.insert(&action.name);
@@ -51,7 +67,7 @@ impl Trie {
         trie
     }
 
-    pub fn starts_with(&self, prefix: &str) -> Vec<String> {
+    pub fn starts_with(&self, prefix: &str) -> Vec<usize> {
         let mut result = Vec::new();
         let mut current = &self.root;
 
@@ -66,8 +82,16 @@ impl Trie {
             }
         }
 
+        let mut word_ids = HashSet::new();
         self.collect_words(current, prefix.to_string(), &mut result);
-        result
+
+        for word in result {
+            if let Some(&id) = self.indexing.get(&word) {
+                word_ids.insert(id);
+            }
+        }
+
+        word_ids.into_iter().collect()
     }
 
     fn collect_words(&self, node: &TrieNode, prefix: String, result: &mut Vec<String>) {

@@ -1,9 +1,11 @@
-use std::collections::BTreeMap;
+use std::collections::{HashMap};
 use leptos::Callback;
+
+
 
 #[derive(Debug, Clone)]
 pub struct KBarAction {
-    id: String, // we'll need this to be unique
+    pub(crate) id: usize, // we'll need this to be unique
     pub(crate) name: String, // we'll require this to also be unique
     pub(crate) shortcut: String,
     pub(crate) keywords: Vec<String>,
@@ -12,7 +14,7 @@ pub struct KBarAction {
 
 impl KBarAction {
     pub fn new(
-        id: String,
+        id: usize,
         name: String,
         shortcut: String,
         keywords: Vec<String>,
@@ -27,28 +29,10 @@ impl KBarAction {
         }
     }
 
-    fn flatten(&self) -> Vec<(String, String)> {
+    fn flatten(&self) -> Vec<(String, usize)> {
         std::iter
             ::once((self.name.clone(), self.id.clone()))
             .chain(self.keywords.iter().map(|k| (k.clone(), self.id.clone())))
             .collect()
-    }
-}
-
-pub struct Search {
-    content: Vec<KBarAction>,
-}
-
-impl Search {
-    /// to_searchable() takes in a list of actions and transform it into a searchable btree structure
-    /// what can we search?
-    /// right now:
-    /// - name
-    /// - keyword
-    pub fn to_searchable(&self) -> Vec<(String, String)> {
-        self.content
-            .iter()
-            .flat_map(|a| a.flatten())
-            .collect::<Vec<(String, String)>>()
     }
 }

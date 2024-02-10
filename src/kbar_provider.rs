@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use leptos::*;
 use leptos_hotkeys::prelude::*;
 
@@ -13,7 +14,6 @@ pub fn KBarPositioner(
     let show_kbar = create_rw_signal(false);
     let HotkeysContext { enable_scope, disable_scope, .. } = use_hotkeys_context();
     let KBarContext { actions, .. } = use_kbar_context();
-
 
     for action in &actions.get() {
         use_hotkeys!((&action.shortcut.clone(), "kbar") => action.perform);
@@ -60,6 +60,7 @@ pub fn KBarPositioner(
 pub struct KBarContext {
     pub actions: RwSignal<Vec<KBarAction>>,
     pub tree: RwSignal<Trie>,
+    pub actions_table: RwSignal<HashMap<usize, KBarAction>>
 }
 
 pub fn use_kbar_context() -> KBarContext {
@@ -69,31 +70,32 @@ pub fn use_kbar_context() -> KBarContext {
 #[component]
 pub fn KBarProvider(
     #[prop(default = "control+k")] hotkey: &'static str,
-
     #[prop(default = "escape")] escape: &'static str,
-
     actions: Vec<KBarAction>,
-
     children: Children
 ) -> impl IntoView {
-    logging::log!("debug:inside kbar provider");
 
     let tree = Trie::batch_insert(&actions);
-    let actions = create_rw_signal(actions);
+
+    let mut actions_table = HashMap::new();
+
+    for action in &actions {
+        actions_table.insert(action.id, action.clone());
+    }
+
+    let actions_table= create_rw_signal(actions_table);
+    let actionsList = create_rw_signal(actions);
     let tree = create_rw_signal(tree);
 
     provide_context(KBarContext {
-        actions,
+        actions: actionsList,
         tree,
+        actions_table,
     });
-
 
     view! {
         <HotkeysProvider>
-            <KBarPositioner
-                hotkey=hotkey
-                escape=escape
-            />
+            <KBarPositioner hotkey=hotkey escape=escape/>
             {children()}
         </HotkeysProvider>
     }

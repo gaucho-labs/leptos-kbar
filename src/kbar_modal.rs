@@ -23,7 +23,7 @@ pub fn KBarModal(show_kbar: RwSignal<bool>) -> impl IntoView {
             z-index: 1000;
             "
         >
-            <KBarSearch />
+            <KBarSearch/>
         </div>
     }
 }
