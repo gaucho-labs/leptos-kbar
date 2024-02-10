@@ -1,5 +1,9 @@
+use std::sync::Arc;
 use leptos::*;
+use leptos_hotkeys::hotkeys_provider::HotkeysContext;
+use leptos_hotkeys::prelude::use_hotkeys_context;
 use crate::kbar_provider::{ KBarContext, use_kbar_context };
+use crate::prelude::KBarAction;
 
 #[component]
 pub fn KBarSearch() -> impl IntoView {
@@ -16,6 +20,9 @@ pub fn SearchBar(
     search_input: ReadSignal<String>, // @justbobinaround -- this is an optimization we can do
     set_search_input: WriteSignal<String>
 ) -> impl IntoView {
+
+    let HotkeysContext { enable_scope, disable_scope, .. } = use_hotkeys_context();
+
     view! {
         <input
             type="text"
@@ -23,17 +30,47 @@ pub fn SearchBar(
                 set_search_input(event_target_value(&ev));
             }
 
+            on:focus=move |_| {
+                disable_scope("kbar".to_string());
+            }
+
+            on:blur=move |_| {
+                enable_scope("kbar".to_string());
+            }
+
             placeholder="Type a command or search..."
             prop:value=search_input
-            style="\
-            font-size: 1rem;
-            padding: 0.25rem;
-            width: 100%;
-            outline: none;
-            "
+            class="searchbar"
         />
     }
 }
+
+
+
+#[component]
+pub fn Action(action: Arc<KBarAction>) -> impl IntoView {
+    let shortcuts = action.shortcut.clone().split("+").map(|s| s.to_string()).collect::<Vec<String>>();
+
+    view! {
+        <div class="action-content">
+            <p>{&*(action.name)}</p>
+            <div class="action-shortcut-content">
+
+                {
+                    let scuts = shortcuts
+                        .iter()
+                        .map(|s| {
+                            view! { <p>{s}</p> }
+                        })
+                        .collect::<Vec<_>>();
+                    scuts
+                }
+
+            </div>
+        </div>
+    }
+}
+
 
 #[component]
 pub fn Content(search_input: ReadSignal<String>) -> impl IntoView {
@@ -52,8 +89,8 @@ pub fn Content(search_input: ReadSignal<String>) -> impl IntoView {
             <For
                 each=result
                 key=|action| action.clone()
-                children=move |action| {
-                    view! { <div>{&*(action.name)}</div> }
+                children=move |action_ref| {
+                    view! { <Action action=action_ref.clone()/> }
                 }
             />
 

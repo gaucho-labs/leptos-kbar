@@ -36,20 +36,7 @@ pub fn KBarPositioner(
 
     view! {
         <Show when=move || show_kbar.get()>
-            <div
-                on:click=move |_| { show_kbar.set(false) }
-                style="\
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.1);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 999;"
-            >
+            <div on:click=move |_| { show_kbar.set(false) } class="positioner">
                 <KBarModal show_kbar=show_kbar/>
             </div>
         </Show>
@@ -76,7 +63,6 @@ pub fn KBarProvider(
 
     let tree = Trie::batch_insert(&actions);
 
-
     let actionsList = create_rw_signal(actions);
     let tree = create_rw_signal(tree);
 
@@ -86,6 +72,7 @@ pub fn KBarProvider(
     });
 
     view! {
+        <style>{include_str!("../kbar.css")}</style>
         <HotkeysProvider>
             <KBarPositioner hotkey=hotkey escape=escape/>
             {children()}

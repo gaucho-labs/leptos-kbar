@@ -8,7 +8,7 @@ use std::sync::Arc;
 pub struct KBarAction {
     pub(crate) id: Arc<usize>, // we'll need this to be unique
     pub(crate) name: Arc<String>, // we'll require this to also be unique
-    pub(crate) shortcut: Arc<String>,
+    pub(crate) shortcut: Arc<String>, // we'll need to require this to not contain commas (only  key or "+" symbols)
     pub(crate) keywords: Vec<Arc<String>>,
     pub(crate) perform: Callback<()>,
 }
