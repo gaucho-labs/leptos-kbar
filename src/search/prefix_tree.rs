@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::search::types::Action;
+use crate::search::types::KBarAction;
 
 #[derive(Debug, Clone)]
 struct TrieNode {
@@ -16,17 +16,15 @@ impl TrieNode {
     }
 }
 
-
-
 #[derive(Debug, Clone)]
-pub(crate) struct Trie {
-    root: TrieNode
+pub struct Trie {
+    root: TrieNode,
 }
 
 impl Trie {
     pub(crate) fn new() -> Self {
         Trie {
-            root: TrieNode::new()
+            root: TrieNode::new(),
         }
     }
 
@@ -40,7 +38,7 @@ impl Trie {
         current.is_end_of_word = true;
     }
 
-    pub fn batch_insert(actions: &[Action]) -> Self {
+    pub fn batch_insert(actions: &[KBarAction]) -> Self {
         let mut trie = Trie::new();
         for action in actions {
             // Insert the action name with its own name as the identifier
@@ -59,8 +57,12 @@ impl Trie {
 
         for ch in prefix.chars() {
             match current.children.get(&ch) {
-                Some(node) => current = node,
-                None => return Vec::new(),
+                Some(node) => {
+                    current = node;
+                }
+                None => {
+                    return Vec::new();
+                }
             }
         }
 

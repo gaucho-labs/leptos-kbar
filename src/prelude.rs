@@ -1,1 +1,7 @@
-pub use crate::{kbar_provider::KBarProvider, search::kbar_search};
+pub use crate::{
+    kbar_provider::KBarProvider,
+    search::{
+        types::KBarAction,
+        kbar_search
+    },
+};

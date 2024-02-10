@@ -2,35 +2,41 @@ use std::collections::BTreeMap;
 use leptos::Callback;
 
 #[derive(Debug, Clone)]
-pub struct Action {
-    id: String,   // we'll need this to be unique
+pub struct KBarAction {
+    id: String, // we'll need this to be unique
     pub(crate) name: String, // we'll require this to also be unique
-    shortcut: String,
+    pub(crate) shortcut: String,
     pub(crate) keywords: Vec<String>,
-    perform: Callback<()>,
+    pub(crate) perform: Callback<()>,
 }
 
-impl Action {
-
-    pub(crate) fn new(id: String, name: String, shortcut: String, keywords: Vec<String>, perform: Callback<()>) -> Self {
-        Action {
+impl KBarAction {
+    pub fn new(
+        id: String,
+        name: String,
+        shortcut: String,
+        keywords: Vec<String>,
+        perform: Callback<()>
+    ) -> Self {
+        KBarAction {
             id,
             name,
             shortcut,
             keywords,
-            perform
+            perform,
         }
     }
 
     fn flatten(&self) -> Vec<(String, String)> {
-        std::iter::once((self.name.clone(), self.id.clone()))
+        std::iter
+            ::once((self.name.clone(), self.id.clone()))
             .chain(self.keywords.iter().map(|k| (k.clone(), self.id.clone())))
             .collect()
     }
 }
 
 pub struct Search {
-    content: Vec<Action>,
+    content: Vec<KBarAction>,
 }
 
 impl Search {

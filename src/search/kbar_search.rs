@@ -1,8 +1,6 @@
 use leptos::*;
-use crate::kbar_provider::{KBarContext, use_kbar_context};
-use crate::search::types::Action;
-
-
+use crate::kbar_provider::{ KBarContext, use_kbar_context };
+use crate::search::types::KBarAction;
 
 #[component]
 pub fn KBarSearch() -> impl IntoView {
@@ -22,7 +20,7 @@ pub fn KBarSearch() -> impl IntoView {
 #[component]
 pub fn SearchBar(
     search_input: ReadSignal<String>, // @justbobinaround -- this is an optimization we can do
-    set_search_input: WriteSignal<String>,
+    set_search_input: WriteSignal<String>
 ) -> impl IntoView {
     view! {
         <input
@@ -43,11 +41,7 @@ pub fn SearchBar(
 }
 
 #[component]
-pub fn Content(
-    search_input: ReadSignal<String>
-
-) -> impl IntoView {
-
+pub fn Content(search_input: ReadSignal<String>) -> impl IntoView {
     let KBarContext { tree, .. } = use_kbar_context();
 
     let result = create_rw_signal(vec![]);
@@ -57,7 +51,6 @@ pub fn Content(
         logging::log!("results: {:?}", trie_results);
         result.set(trie_results);
     });
-
 
     view! {
         <ul>
