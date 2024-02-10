@@ -17,7 +17,6 @@ pub fn KBarModal(show_kbar: RwSignal<bool>) -> impl IntoView {
             style="\
             background-color: #fff;
             width: 500px;
-            height: 100px;
             padding: 6px;
             border-radius: 5px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

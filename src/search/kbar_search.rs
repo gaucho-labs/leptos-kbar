@@ -1,5 +1,6 @@
 use leptos::*;
-use std::collections::BTreeMap;
+use crate::kbar_provider::{KBarContext, use_kbar_context};
+use crate::search::types::Action;
 
 
 
@@ -12,7 +13,9 @@ pub fn KBarSearch() -> impl IntoView {
             search_input=search_input
             set_search_input=set_search_input
         />
-        <Content/>
+        <Content
+            search_input=search_input
+        />
     }
 }
 
@@ -40,12 +43,35 @@ pub fn SearchBar(
 }
 
 #[component]
-pub fn Content() -> impl IntoView {
+pub fn Content(
+    search_input: ReadSignal<String>
+
+) -> impl IntoView {
+
+    let KBarContext { tree, .. } = use_kbar_context();
+
+    let result = create_rw_signal(vec![]);
+
+    create_effect(move |_| {
+        let trie_results = tree.get().starts_with(&search_input.get());
+        logging::log!("results: {:?}", trie_results);
+        result.set(trie_results);
+    });
+
+
     view! {
-        <div>
-
-
-
-        </div>
+        <ul>
+          <For
+                each=result
+                key=|log| log.clone()
+                children=move |log| {
+                    view! {
+                        <li>
+                            <p>{log}</p>
+                        </li>
+                    }
+                }
+            />
+        </ul>
     }
 }

@@ -2,6 +2,8 @@ use leptos::*;
 use leptos_hotkeys::prelude::*;
 
 use crate::kbar_modal::KBarModal;
+use crate::search::prefix_tree::Trie;
+use crate::search::types::Action;
 
 #[component]
 pub fn KBarPositioner(hotkey: &'static str, escape: &'static str) -> impl IntoView {
@@ -43,6 +45,17 @@ pub fn KBarPositioner(hotkey: &'static str, escape: &'static str) -> impl IntoVi
     }
 }
 
+#[derive(Clone)]
+pub struct KBarContext {
+    pub actions: RwSignal<Vec<Action>>,
+    pub tree: RwSignal<Trie>,
+}
+
+pub fn use_kbar_context() -> KBarContext {
+    use_context::<KBarContext>().expect("expected kbar context")
+}
+
+
 #[component]
 pub fn KBarProvider(
     #[prop(default = "control+k")] hotkey: &'static str,
@@ -52,6 +65,31 @@ pub fn KBarProvider(
     children: Children,
 ) -> impl IntoView {
     logging::log!("debug:inside kbar provider");
+
+    let actions = vec![
+        Action::new("chair".to_string(), "chair".to_string(), "c+h".to_string(), vec!["cheese".to_string(), "dinosaur".to_string()], Callback::new( move |_| {
+            logging::log!("called chair");
+
+        })),
+        Action::new("howdy".to_string(), "howdy".to_string(), "h".to_string(), vec!["cowboy".to_string(), "deez".to_string()], Callback::new(move |_| {
+            logging::log!("called howdy");
+        })),
+        Action::new("deeznuts".to_string(), "deeznuts".to_string(), "d".to_string(), vec!["cholo".to_string(), "que".to_string()], Callback::new(move |_| {
+            logging::log!("called deeznuts");
+        })),
+    ];
+
+    let tree = Trie::batch_insert(&actions);
+
+    let actions = create_rw_signal(actions);
+    let tree = create_rw_signal(tree);
+
+    provide_context(KBarContext {
+        actions,
+        tree,
+    });
+
+
     view! {
         <HotkeysProvider>
             <KBarPositioner hotkey=hotkey escape=escape/>
