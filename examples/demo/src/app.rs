@@ -12,15 +12,15 @@ pub fn App() -> impl IntoView {
 
 
     let kbar_actions = vec![
-        Arc::new(KBarAction::new(1, "Contribute".to_string(), "c".to_string(), vec!["github".to_string(), "repository".to_string(), "source code".to_string()], Callback::new( move |_| {
+        KBarAction::new(1, "Contribute".to_string(), "c".to_string(), vec!["github".to_string(), "repository".to_string(), "source code".to_string()], Callback::new( move |_| {
             window().location().set_href("https://github.com/friendlymatthew/leptos-kbar").expect("Failed to navigate");
-        }))),
-        Arc::new(KBarAction::new(2, "howdy".to_string(), "h".to_string(), vec!["cowboy".to_string(), "deez".to_string()], Callback::new(move |_| {
+        })),
+        KBarAction::new(2, "howdy".to_string(), "h".to_string(), vec!["cowboy".to_string(), "deez".to_string()], Callback::new(move |_| {
             logging::log!("called howdy");
-        }))),
-        Arc::new(KBarAction::new(3, "deeznuts".to_string(), "d".to_string(), vec!["cholo".to_string(), "que".to_string()], Callback::new(move |_| {
+        })),
+        KBarAction::new(3, "deeznuts".to_string(), "d".to_string(), vec!["cholo".to_string(), "que".to_string()], Callback::new(move |_| {
             logging::log!("called deeznuts");
-        }))),
+        })),
     ];
 
     view! {

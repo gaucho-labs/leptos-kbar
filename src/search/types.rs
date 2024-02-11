@@ -20,18 +20,18 @@ impl KBarAction {
         shortcut: String,
         keywords: Vec<String>,
         perform: Callback<()>
-    ) -> Self {
+    ) -> Arc<Self> {
         let keywords = keywords
             .iter()
             .map(|k| Arc::new(k.clone()))
             .collect();
-        KBarAction {
+        Arc::new(KBarAction {
             id: Arc::new(id),
             name: Arc::new(name),
             shortcut: Arc::new(shortcut),
             keywords,
             perform,
-        }
+        })
     }
 
     pub fn flatten(action_ref: &Arc<KBarAction>) -> Vec<(Arc<String>, Arc<KBarAction>)> {

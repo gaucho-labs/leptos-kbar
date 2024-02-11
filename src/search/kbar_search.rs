@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use leptos::*;
 use leptos_hotkeys::hotkeys_provider::HotkeysContext;
-use leptos_hotkeys::prelude::use_hotkeys_context;
+use leptos_hotkeys::prelude::*;
 use crate::kbar_provider::{ KBarContext, use_kbar_context };
 use crate::prelude::KBarAction;
 
@@ -50,10 +50,19 @@ pub fn SearchBar(
 #[component]
 pub fn Action(action: Arc<KBarAction>) -> impl IntoView {
     let shortcuts = action.shortcut.clone().split("+").map(|s| s.to_string()).collect::<Vec<String>>();
+    let name = action.name.clone().to_string();
 
     view! {
-        <div class="action-content">
-            <p>{&*(action.name)}</p>
+        <div
+            on:click=move |_| {
+                logging::log!("action clicked");
+                Callable::call(&action.perform, ());
+                ()
+            }
+
+            class="action-content"
+        >
+            <p>{name}</p>
             <div class="action-shortcut-content">
 
                 {
@@ -82,6 +91,20 @@ pub fn Content(search_input: ReadSignal<String>) -> impl IntoView {
         let trie_results = tree.get().starts_with(&search_input.get());
         logging::log!("results: {:?}", trie_results);
         result.set(trie_results);
+    });
+
+    let curr_index = create_rw_signal(0);
+
+    use_hotkeys!(("arrowup", "kbar") => move |_| {
+        curr_index.update(move |i| {
+            *i += 1;
+        });
+    });
+
+    use_hotkeys!(("arrowdown", "kbar") => move |_| {
+        curr_index.update(move |i| {
+            *i -= 1;
+        });
     });
 
     view! {
