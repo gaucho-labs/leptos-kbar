@@ -40,7 +40,11 @@ pub fn SearchBar(
 }
 
 #[component]
-pub fn Action(action: Arc<KBarAction>) -> impl IntoView {
+pub fn Action(
+    curr_index: RwSignal<usize>,
+    index: usize,
+    action: Arc<KBarAction>
+) -> impl IntoView {
     let shortcuts = action
         .shortcut
         .clone()
@@ -57,8 +61,15 @@ pub fn Action(action: Arc<KBarAction>) -> impl IntoView {
                 ()
             }
 
-            class=CONTENT_ITEM_CSS
+            class=move || {
+                if curr_index.get() == index + 1 {
+                    format!("{} bg-gray-100 dark:bg-[#222222]", CONTENT_ITEM_CSS)
+                } else {
+                    format!("{} ", CONTENT_ITEM_CSS)
+                }
+            }
         >
+
             <p>{name}</p>
             <div class="flex space-x-2 items-center">
 
@@ -89,17 +100,28 @@ pub fn Content(search_input: ReadSignal<String>) -> impl IntoView {
         result.set(trie_results);
     });
 
+    // since you can navigate with arrow keys, we're going to create a state
+    // but let's also make it where the content idx + 1 == curr_index since 0 is the search bar
     let curr_index = create_rw_signal(0);
+
 
     use_hotkeys!(("arrowup", "kbar") => move |_| {
         curr_index.update(move |i| {
-            *i += 1;
+            if *i == 1 {
+                *i = result.get().len();
+            } else {
+                *i -= 1;
+            }
         });
     });
 
     use_hotkeys!(("arrowdown", "kbar") => move |_| {
         curr_index.update(move |i| {
-            *i -= 1;
+            if *i == result.get().len() {
+                *i = 1;
+            } else {
+                *i += 1;
+            }
         });
     });
 
@@ -108,9 +130,9 @@ pub fn Content(search_input: ReadSignal<String>) -> impl IntoView {
             <p class=CONTENT_HEADER_CSS>Navigation</p>
             <For
                 each=result
-                key=|action| action.clone()
-                children=move |action_ref| {
-                    view! { <Action action=action_ref.clone()/> }
+                key=|(idx, action)| action.clone()
+                children=move |(idx, action_ref)| {
+                    view! { <Action curr_index=curr_index index=idx action=action_ref.clone()/> }
                 }
             />
 

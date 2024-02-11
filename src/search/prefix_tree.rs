@@ -68,7 +68,7 @@ impl Trie {
         trie
     }
 
-    pub fn starts_with(&self, prefix: &str) -> Vec<Arc<KBarAction>> {
+    pub fn starts_with(&self, prefix: &str) -> Vec<(usize, Arc<KBarAction>)> {
         let mut result = Vec::new();
         let mut current = &self.root;
 
@@ -92,7 +92,7 @@ impl Trie {
             }
         }
 
-        word_ids.into_iter().collect()
+        word_ids.into_iter().enumerate().collect()
     }
 
     fn collect_words(&self, node: &TrieNode, prefix: String, result: &mut Vec<String>) {

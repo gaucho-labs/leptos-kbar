@@ -41,7 +41,7 @@ pub fn App() -> impl IntoView {
 #[component]
 fn HomePage() -> impl IntoView {
 
-    let UseColorModeReturn { mode, set_mode, .. } = use_color_mode_with_options(
+    let UseColorModeReturn { .. } = use_color_mode_with_options(
         UseColorModeOptions::default()
             .initial_value(ColorMode::from(html().class_name())),
     );
