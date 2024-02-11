@@ -1,10 +1,13 @@
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
-use leptos_theme::ThemeProvider;
-
+use leptos_use::{
+    use_color_mode_with_options,ColorMode, UseColorModeOptions,
+    UseColorModeReturn,
+};
+use leptos::html::html;
 use leptos_kbar::prelude::*;
-use std::sync::Arc;
+use crate::info_page::InfoPage;
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -12,41 +15,44 @@ pub fn App() -> impl IntoView {
 
 
     let kbar_actions = vec![
-        KBarAction::new(1, "Contribute".to_string(), "c".to_string(), vec!["github".to_string(), "repository".to_string(), "source code".to_string()], Callback::new( move |_| {
+        KBarAction::new(1, "Source Code".to_string(), "g+h".to_string(), vec!["github".to_string(), "repository".to_string(), "source code".to_string()], Callback::new( move |_| {
             window().location().set_href("https://github.com/friendlymatthew/leptos-kbar").expect("Failed to navigate");
         })),
-        KBarAction::new(2, "howdy".to_string(), "h".to_string(), vec!["cowboy".to_string(), "deez".to_string()], Callback::new(move |_| {
-            logging::log!("called howdy");
-        })),
-        KBarAction::new(3, "deeznuts".to_string(), "d".to_string(), vec!["cholo".to_string(), "que".to_string()], Callback::new(move |_| {
-            logging::log!("called deeznuts");
+        KBarAction::new(2, "Learn more".to_string(), "l".to_string(), vec!["contribute".to_string(), "documentation".to_string()], Callback::new(move |_| {
+            window().location().set_href("/information").expect("failed to go to /information");
         })),
     ];
 
     view! {
         <Stylesheet id="leptos" href="/pkg/demo.css"/>
-        <KBarProvider actions=kbar_actions>
-            <ThemeProvider>
-                <Router>
-                    <Routes>
-                        <Route path="/" view=HomePage/>
-                        <Route path="/:else" view=ErrorPage/>
-                    </Routes>
-                </Router>
-            </ThemeProvider>
+
+        <KBarProvider actions=kbar_actions show_theme=true>
+            <Router>
+                <Routes>
+                    <Route path="/" view=HomePage/>
+                    <Route path="/information" view=InfoPage/>
+                    <Route path="/:else" view=ErrorPage/>
+                </Routes>
+            </Router>
         </KBarProvider>
     }
 }
 
 #[component]
 fn HomePage() -> impl IntoView {
+
+    let UseColorModeReturn { mode, set_mode, .. } = use_color_mode_with_options(
+        UseColorModeOptions::default()
+            .initial_value(ColorMode::from(html().class_name())),
+    );
+
     const REPO: &'static str = "https://github.com/friendlymatthew/leptos-kbar";
 
     view! {
-        <main class="dark:bg-[#1a1a1a] bg-white dark:text-white h-screen py-20 w-full space-y-8 font-robotomono">
-            <div class="text-center space-y-2">
-                <p class="text-3xl">leptos-csr-starter-kit</p>
-                <p>Set up a client side rendered Leptos app with one command</p>
+        <main class="bg-white dark:bg-[#1a1a1a] dark:text-white h-screen py-20 flex justify-center font-robotomono">
+            <div class="w-10/12">
+                <p class="text-xl">leptos kbar</p>
+                <p>"Press `ctrl+k`"</p>
             </div>
         </main>
     }

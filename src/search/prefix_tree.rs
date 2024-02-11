@@ -1,5 +1,5 @@
-use std::collections::{HashMap, HashSet};
 use crate::search::types::KBarAction;
+use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
 #[derive(Debug, Clone)]
@@ -37,7 +37,6 @@ impl Trie {
             for (keyword_ref, action_ref) in action_refs {
                 indexer.insert(keyword_ref, action_ref);
             }
-
         }
 
         Trie {

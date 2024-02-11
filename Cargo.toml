@@ -7,4 +7,6 @@ edition = "2021"
 
 [dependencies]
 leptos = "0.6.5"
+leptos-use = "0.10.2"
 leptos_hotkeys = "0.1.2"
+leptos_theme = "0.1.2"

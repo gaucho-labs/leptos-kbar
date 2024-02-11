@@ -1,13 +1,11 @@
-use std::hash::{ Hash, Hasher };
 use leptos::Callback;
+use std::hash::{Hash, Hasher};
 use std::sync::Arc;
-
-
 
 #[derive(Debug, Clone)]
 pub struct KBarAction {
-    pub(crate) id: Arc<usize>, // we'll need this to be unique
-    pub(crate) name: Arc<String>, // we'll require this to also be unique
+    pub(crate) id: Arc<usize>,        // we'll need this to be unique
+    pub(crate) name: Arc<String>,     // we'll require this to also be unique
     pub(crate) shortcut: Arc<String>, // we'll need to require this to not contain commas (only  key or "+" symbols)
     pub(crate) keywords: Vec<Arc<String>>,
     pub(crate) perform: Callback<()>,
@@ -19,12 +17,9 @@ impl KBarAction {
         name: String,
         shortcut: String,
         keywords: Vec<String>,
-        perform: Callback<()>
+        perform: Callback<()>,
     ) -> Arc<Self> {
-        let keywords = keywords
-            .iter()
-            .map(|k| Arc::new(k.clone()))
-            .collect();
+        let keywords = keywords.iter().map(|k| Arc::new(k.clone())).collect();
         Arc::new(KBarAction {
             id: Arc::new(id),
             name: Arc::new(name),
@@ -35,9 +30,13 @@ impl KBarAction {
     }
 
     pub fn flatten(action_ref: &Arc<KBarAction>) -> Vec<(Arc<String>, Arc<KBarAction>)> {
-        std::iter
-            ::once((action_ref.name.clone(), action_ref.clone()))
-            .chain((action_ref).keywords.iter().map(|k| (k.clone(), action_ref.clone())))
+        std::iter::once((action_ref.name.clone(), action_ref.clone()))
+            .chain(
+                (action_ref)
+                    .keywords
+                    .iter()
+                    .map(|k| (k.clone(), action_ref.clone())),
+            )
             .collect()
     }
 }

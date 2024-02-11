@@ -1,27 +1,21 @@
-use std::sync::Arc;
+use crate::kbar_modal::{CONTENT_HEADER_CSS, CONTENT_ITEM_CSS};
+use crate::kbar_provider::{use_kbar_context, KBarContext};
+use crate::prelude::KBarAction;
 use leptos::*;
 use leptos_hotkeys::hotkeys_provider::HotkeysContext;
 use leptos_hotkeys::prelude::*;
-use crate::kbar_provider::{ KBarContext, use_kbar_context };
-use crate::prelude::KBarAction;
-
-#[component]
-pub fn KBarSearch() -> impl IntoView {
-    let (search_input, set_search_input) = create_signal("".to_string());
-
-    view! {
-        <SearchBar search_input=search_input set_search_input=set_search_input/>
-        <Content search_input=search_input/>
-    }
-}
+use std::sync::Arc;
 
 #[component]
 pub fn SearchBar(
     search_input: ReadSignal<String>, // @justbobinaround -- this is an optimization we can do
-    set_search_input: WriteSignal<String>
+    set_search_input: WriteSignal<String>,
 ) -> impl IntoView {
-
-    let HotkeysContext { enable_scope, disable_scope, .. } = use_hotkeys_context();
+    let HotkeysContext {
+        enable_scope,
+        disable_scope,
+        ..
+    } = use_hotkeys_context();
 
     view! {
         <input
@@ -40,16 +34,19 @@ pub fn SearchBar(
 
             placeholder="Type a command or search..."
             prop:value=search_input
-            class="searchbar"
+            class="p-4 w-full focus:outline-none dark:bg-[#1a1a1a] dark:text-white"
         />
     }
 }
 
-
-
 #[component]
 pub fn Action(action: Arc<KBarAction>) -> impl IntoView {
-    let shortcuts = action.shortcut.clone().split("+").map(|s| s.to_string()).collect::<Vec<String>>();
+    let shortcuts = action
+        .shortcut
+        .clone()
+        .split("+")
+        .map(|s| s.to_string())
+        .collect::<Vec<String>>();
     let name = action.name.clone().to_string();
 
     view! {
@@ -60,16 +57,16 @@ pub fn Action(action: Arc<KBarAction>) -> impl IntoView {
                 ()
             }
 
-            class="action-content"
+            class=CONTENT_ITEM_CSS
         >
             <p>{name}</p>
-            <div class="action-shortcut-content">
+            <div class="flex space-x-2 items-center">
 
                 {
                     let scuts = shortcuts
                         .iter()
                         .map(|s| {
-                            view! { <p>{s}</p> }
+                            view! { <code class="">{s}</code> }
                         })
                         .collect::<Vec<_>>();
                     scuts
@@ -79,7 +76,6 @@ pub fn Action(action: Arc<KBarAction>) -> impl IntoView {
         </div>
     }
 }
-
 
 #[component]
 pub fn Content(search_input: ReadSignal<String>) -> impl IntoView {
@@ -109,6 +105,7 @@ pub fn Content(search_input: ReadSignal<String>) -> impl IntoView {
 
     view! {
         <ul>
+            <p class=CONTENT_HEADER_CSS>Navigation</p>
             <For
                 each=result
                 key=|action| action.clone()
