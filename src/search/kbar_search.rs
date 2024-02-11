@@ -82,8 +82,22 @@ pub fn Action(
                         .collect::<Vec<_>>();
                     scuts
                 }
-
+                <Show when=move || { curr_index.get() == index + 1 }>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 16 16"
+                        fill="currentColor"
+                        class="w-4 h-4"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M6.22 4.22a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06l-3.25 3.25a.75.75 0 0 1-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 0 1 0-1.06Z"
+                            clip-rule="evenodd"
+                        ></path>
+                    </svg>
+                </Show>
             </div>
+
         </div>
     }
 }
@@ -104,6 +118,23 @@ pub fn Content(search_input: ReadSignal<String>) -> impl IntoView {
     // but let's also make it where the content idx + 1 == curr_index since 0 is the search bar
     let curr_index = create_rw_signal(0);
 
+    use_hotkeys!(("enter", "kbar") => move |_| {
+        let curr_index = curr_index.get();
+
+        if curr_index != 0 {
+            // then we know it's at a valid state
+
+            // we should also check if it's a parent
+                // then we can rerender result to display the children's prefix tree
+
+            // else
+            if let Some(action_callback) = result.get().get(curr_index - 1) {
+                let (_idx, a) = action_callback;
+                Callable::call(&a.perform, ());
+            }
+
+        }
+    });
 
     use_hotkeys!(("arrowup", "kbar") => move |_| {
         curr_index.update(move |i| {

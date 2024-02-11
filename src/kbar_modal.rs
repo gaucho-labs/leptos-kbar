@@ -4,8 +4,8 @@ use leptos_hotkeys::prelude::*;
 use leptos_use::{use_color_mode_with_options, ColorMode, UseColorModeOptions, UseColorModeReturn};
 
 pub const CONTENT_HEADER_CSS: &'static str =
-    "uppercase text-xs tracking-tight text-gray-400 font-semibold px-4 py-1";
-pub const CONTENT_ITEM_CSS: &'static str = "hover:bg-gray-100 dark:hover:bg-[#222222] cursor-pointer flex justify-between items-center w-full p-4";
+    "uppercase text-xs tracking-tight text-gray-400 font-semibold px-4 py-1 mt-1";
+pub const CONTENT_ITEM_CSS: &'static str = "hover:bg-gray-100 dark:hover:bg-[#222222] cursor-pointer flex justify-between items-center w-full p-4 transition ease-in duration-100";
 
 #[component]
 pub fn KBarModal(
