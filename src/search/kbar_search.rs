@@ -17,23 +17,32 @@ pub fn SearchBar(
         ..
     } = use_hotkeys_context();
 
+    let input_ref = create_node_ref();
+    let input_focused = create_rw_signal(false);
+
     view! {
         <input
+            _ref=input_ref
             type="text"
             on:input=move |ev| {
                 set_search_input(event_target_value(&ev));
             }
 
             on:focus=move |_| {
+                input_focused.set(true);
                 disable_scope("kbar".to_string());
+                enable_scope("search-kbar".to_string());
             }
 
             on:blur=move |_| {
+                input_focused.set(false);
+                disable_scope("search-kbar".to_string());
                 enable_scope("kbar".to_string());
             }
 
             placeholder="Type a command or search..."
             prop:value=search_input
+            autocomplete="off"
             class="p-4 w-full focus:outline-none dark:bg-[#1a1a1a] dark:text-white"
         />
     }
@@ -69,7 +78,6 @@ pub fn Action(
                 }
             }
         >
-
             <p>{name}</p>
             <div class="flex space-x-2 items-center">
 
@@ -82,20 +90,7 @@ pub fn Action(
                         .collect::<Vec<_>>();
                     scuts
                 }
-                <Show when=move || { curr_index.get() == index + 1 }>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 16 16"
-                        fill="currentColor"
-                        class="w-4 h-4"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            d="M6.22 4.22a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06l-3.25 3.25a.75.75 0 0 1-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 0 1 0-1.06Z"
-                            clip-rule="evenodd"
-                        ></path>
-                    </svg>
-                </Show>
+
             </div>
 
         </div>
@@ -110,13 +105,16 @@ pub fn Content(search_input: ReadSignal<String>) -> impl IntoView {
 
     create_effect(move |_| {
         let trie_results = tree.get().starts_with(&search_input.get());
-        logging::log!("results: {:?}", trie_results);
         result.set(trie_results);
     });
 
     // since you can navigate with arrow keys, we're going to create a state
     // but let's also make it where the content idx + 1 == curr_index since 0 is the search bar
     let curr_index = create_rw_signal(0);
+
+    create_effect(move |_| {
+        logging::log!("{}", curr_index.get());
+    });
 
     use_hotkeys!(("enter", "kbar") => move |_| {
         let curr_index = curr_index.get();

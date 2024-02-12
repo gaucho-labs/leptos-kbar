@@ -92,7 +92,11 @@ impl Trie {
             }
         }
 
-        word_ids.into_iter().enumerate().collect()
+        let mut actions: Vec<_> = word_ids.into_iter().collect();
+        actions.sort_by_key(| a| *a.id);
+
+
+        actions.into_iter().enumerate().collect()
     }
 
     fn collect_words(&self, node: &TrieNode, prefix: String, result: &mut Vec<String>) {

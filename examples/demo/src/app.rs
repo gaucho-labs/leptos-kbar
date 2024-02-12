@@ -15,10 +15,13 @@ pub fn App() -> impl IntoView {
 
 
     let kbar_actions = vec![
-        KBarAction::new(1, "Source Code".to_string(), "g+h".to_string(), vec!["github".to_string(), "repository".to_string(), "source code".to_string()], Callback::new( move |_| {
+        KBarAction::new("Home".to_string(), "h".to_string(), vec!["home".to_string(), "index".to_string()], Callback::new(move |_| {
+            window().location().set_href("/").expect("failed to navigate back to home dir");
+        })),
+        KBarAction::new("Source Code".to_string(), "g+h".to_string(), vec!["github".to_string(), "repository".to_string(), "source code".to_string()], Callback::new( move |_| {
             window().location().set_href("https://github.com/friendlymatthew/leptos-kbar").expect("Failed to navigate");
         })),
-        KBarAction::new(2, "Learn more".to_string(), "l".to_string(), vec!["contribute".to_string(), "documentation".to_string()], Callback::new(move |_| {
+        KBarAction::new("Learn more".to_string(), "l".to_string(), vec!["contribute".to_string(), "documentation".to_string()], Callback::new(move |_| {
             window().location().set_href("/information").expect("failed to go to /information");
         })),
     ];

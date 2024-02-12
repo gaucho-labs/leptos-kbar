@@ -6,6 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+lazy_static = "1.4.0"
 leptos = "0.6.5"
 leptos-use = "0.10.2"
 leptos_hotkeys = "0.1.2"

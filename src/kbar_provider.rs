@@ -45,11 +45,7 @@ pub fn KBarPositioner(
                     on:click=move |_| { show_kbar.set(false) }
                     class="fixed inset-0 flex items-center justify-center z-50 px-8 bg-smoke"
                 >
-                    <KBarModal
-                        show_kbar=show_kbar
-                        show_theme=show_theme
-                        themekey=themekey
-                    />
+                    <KBarModal show_kbar=show_kbar show_theme=show_theme themekey=themekey/>
                 </div>
             </Show>
         </div>
@@ -68,25 +64,14 @@ pub fn use_kbar_context() -> KBarContext {
 
 #[component]
 pub fn KBarProvider(
-    #[prop(default=true)] show_home: bool,
-    #[prop(default="/")] home_route: &'static str,
-
     #[prop(default = "control+k")] hotkey: &'static str,
     #[prop(default = "escape")] escapekey: &'static str,
 
     #[prop(default=true)] show_theme: bool,
     #[prop(default = "t")] themekey: &'static str,
-    mut actions: Vec<Arc<KBarAction>>,
+    actions: Vec<Arc<KBarAction>>,
     children: Children,
 ) -> impl IntoView {
-
-    if show_home {
-        let home_action = KBarAction::new(0, "Home".to_string(), "h".to_string(), vec!["home".to_string(), "index".to_string()], Callback::new(move |_| {
-            window().location().set_href("/").expect("failed to navigate back to home dir");
-        }));
-
-        actions.insert(0, home_action);
-    }
 
     let tree = Trie::batch_insert(&actions);
 

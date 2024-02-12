@@ -840,6 +840,7 @@ dependencies = [
 name = "leptos_kbar"
 version = "0.1.0"
 dependencies = [
+ "lazy_static",
  "leptos",
  "leptos-use",
  "leptos_hotkeys",

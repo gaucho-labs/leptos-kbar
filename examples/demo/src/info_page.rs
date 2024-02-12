@@ -17,7 +17,6 @@ pub fn InfoPage(
             .initial_value(ColorMode::from(html().class_name())),
     );
 
-
     view! {
         <div class="dark:bg-[#1a1a1a] dark:text-white flex w-full justify-center">
             <div class="w-10/12 mt-12">

@@ -1,6 +1,11 @@
 use leptos::Callback;
 use std::hash::{Hash, Hasher};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
+use lazy_static::lazy_static;
+
+lazy_static! {
+    static ref NEXT_ID: Mutex<usize> = Mutex::new(1);
+}
 
 #[derive(Debug, Clone)]
 pub struct KBarAction {
@@ -13,12 +18,15 @@ pub struct KBarAction {
 
 impl KBarAction {
     pub fn new(
-        id: usize,
         name: String,
         shortcut: String,
         keywords: Vec<String>,
         perform: Callback<()>,
     ) -> Arc<Self> {
+        let mut id_guard = NEXT_ID.lock().unwrap();
+        let id = *id_guard;
+        *id_guard += 1;
+
         let keywords = keywords.iter().map(|k| Arc::new(k.clone())).collect();
         Arc::new(KBarAction {
             id: Arc::new(id),
