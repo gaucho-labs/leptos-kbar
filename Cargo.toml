@@ -9,5 +9,5 @@ edition = "2021"
 lazy_static = "1.4.0"
 leptos = "0.6.5"
 leptos-use = "0.10.2"
-leptos_hotkeys = "0.1.2"
+leptos_hotkeys = { git = "https://github.com/gaucho-labs/leptos-hotkeys", features = ["csr", "debug"]}
 leptos_theme = "0.1.2"

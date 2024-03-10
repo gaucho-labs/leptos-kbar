@@ -827,13 +827,14 @@ dependencies = [
 
 [[package]]
 name = "leptos_hotkeys"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "110aa05604f3fec6ae24451e1694d8dedd8a0066aa4aba34252280d457eed13c"
+version = "0.1.6"
+source = "git+https://github.com/gaucho-labs/leptos-hotkeys#2b91a52f81b69e01d21c62f5bd9486bad3453f8a"
 dependencies = [
+ "cfg-if",
  "leptos",
  "log",
  "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]

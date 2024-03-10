@@ -32,7 +32,7 @@ pub fn App() -> impl IntoView {
     view! {
         <Stylesheet id="leptos" href="/pkg/demo.css"/>
 
-        <KBarProvider actions=kbar_actions show_theme=true>
+        <CommandMenu actions=kbar_actions show_theme=true>
             <Router>
                 <Routes>
                     <Route path="/" view=HomePage/>
@@ -40,7 +40,7 @@ pub fn App() -> impl IntoView {
                     <Route path="/:else" view=ErrorPage/>
                 </Routes>
             </Router>
-        </KBarProvider>
+        </CommandMenu>
     }
 }
 
@@ -58,7 +58,7 @@ fn HomePage() -> impl IntoView {
         <main class="bg-white dark:bg-[#1a1a1a] dark:text-white h-screen py-20 flex justify-center font-robotomono">
             <div class="w-10/12">
                 <p class="text-xl">leptos kbar</p>
-                <p>"Press `ctrl+k`"</p>
+                <p>"Press `cmd+k`"</p>
             </div>
         </main>
     }
